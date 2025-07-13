@@ -1,0 +1,111 @@
+<div class="text-center">
+  <h6>SMS Counts with respect to Time</h6>
+</div>
+
+<div id="chart_sms_counts_time"></div>
+
+<script>
+  function renderSmsCountsTime(data) {
+    // prepare rendering data
+    var options = {
+      series: [
+        {
+          name: "incoming",
+          data: [], // need to fill in
+        },
+        {
+          name: "outgoing",
+          data: [], // need to fill in
+        },
+      ],
+      chart: {
+        type: "bar",
+        height: 350,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "55%",
+          endingShape: "rounded",
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ["transparent"],
+      },
+      xaxis: {
+        categories: [], // need to fill in
+      },
+      yaxis: {
+        title: {
+          text: "counts",
+        },
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        y: {
+          formatter: (val) => val,
+        },
+      },
+    };
+
+    // get all relevent dates
+    var allDates = new Set();
+    data.record.forEach((el) => allDates.add(el["timestamp_to_date"]));
+
+    // prepare a dictionary for two types of calls
+    var dataDict = new Map();
+    allDates.forEach((date) => {
+      dataDict.set(date, {});
+    });
+
+    // add records to dictionary according to call type
+    data.record.forEach((el) => {
+      dataDict.get(el["timestamp_to_date"])[el["message_type"]] = el;
+    });
+
+    // iterate through the dictionary
+    // 1 – incoming, 2 – outgoing,
+    allDates.forEach((date) => {
+      // incoming
+      if (dataDict.get(date)[1] === undefined) {
+        options.series[0].data.push(0);
+      } else {
+        options.series[0].data.push(dataDict.get(date)[1]["counts"]);
+      }
+      // outgoing
+      if (dataDict.get(date)[2] === undefined) {
+        options.series[1].data.push(0);
+      } else {
+        options.series[1].data.push(dataDict.get(date)[2]["counts"]);
+      }
+
+      // try to get an entry of date
+      var entry_keys = Object.keys(dataDict.get(date));
+      if (entry_keys.length > 0) {
+        var entry = dataDict.get(date)[entry_keys[0]];
+        options.xaxis.categories.push(formatDateRange(entry));
+      } else {
+        options.xaxis.categories.push("Unknown date range");
+      }
+    });
+
+    var parentNode = document.querySelector("#chart_sms_counts_time");
+        parentNode.childNodes.forEach(node =>{
+            parentNode.removeChild(node);
+        })
+
+    // render chart
+    var chart = new ApexCharts(
+      document.querySelector("#chart_sms_counts_time"),
+      options
+    );
+    chart.render();
+  }
+</script>

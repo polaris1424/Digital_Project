@@ -1,0 +1,53 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="col-12 mb-4 mt-4 ms-4" style="width:100%; display: flex;flex-direction: row; align-items: center;">
+        <a href="javascript:history.back()" class="btn btn-outline-primary">Back</a>
+        <div class="ms-4">
+            <h2>Data Analysis</h2>
+        </div>
+    </div>
+    <div class="nav-wrapper position-relative">
+        <ul class="nav nav-pills nav-fill flex-column flex-md-row">
+            <li class="nav-item me-sm-2">
+                <a class="nav-link mb-3 mb-md-0 d-flex align-items-center justify-content-center active"
+                   data-bs-toggle="tab" href="#callTab">
+                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                    </svg>
+                    Call
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link mb-3 mb-md-0 d-flex align-items-center justify-content-center" data-bs-toggle="tab"
+                   href="#smsTab">
+                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                    </svg>
+                    SMS
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content">
+        <!-- Call 选项卡内容 -->
+        <div class="tab-pane fade show active" id="callTab">
+            {% include 'views/dataAnalysis/call_data.html' with clientId=clientId %}
+        </div>
+
+        <!-- SMS 选项卡内容 -->
+        <div class="tab-pane fade" id="smsTab">
+            {% include 'views/dataAnalysis/sms_data.html' with clientId=clientId %}
+        </div>
+    </div>
+
+    <script>
+        var urlParams = new URLSearchParams(window.location.search);
+        var clientId = urlParams.get("clientId");
+    </script>
+{% endblock %}
+

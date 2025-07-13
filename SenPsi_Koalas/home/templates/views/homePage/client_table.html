@@ -1,0 +1,193 @@
+<div style="height: 370px;">
+    <table id="table-test" class="table table-centered table-nowrap mb-0 rounded">
+        <thead class="thead-light">
+        <tr>
+            <th class="border-0 rounded-start center-text">ID</th>
+            <th class="border-0 center-text">Username</th>
+            <th class="border-0 center-text">First_Name</th>
+            <th class="border-0 center-text">Last_Name</th>
+            <th class="border-0 center-text">Gender</th>
+            <th class="border-0 rounded-end center-text">operation</th>
+        </tr>
+        </thead>
+        <tbody class="center-text"></tbody>
+        <!-- Empty table body -->
+    </table>
+</div>
+
+<div class="container" style="display: flex; bottom: 0px;">
+    <nav aria-label="Page navigation example" id="pagination" style="margin-left: 30%">
+        <div class="pagination">
+            <button class="btn btn-gray-100" style="width: 120px; text-align: center" onclick="last_page()">Previous
+            </button>
+            <button class="btn btn-gray-100" style="width: 120px; text-align: center" onclick="next_page()">Next
+            </button>
+        </div>
+    </nav>
+</div>
+
+<style>
+    .center-text {
+        text-align: center;
+    }
+</style>
+
+<script>
+    const clinician_id =
+    {{ request.user.id }}
+    const paginationContainer = document.getElementById("pagination");
+    const previousPageButton = document.getElementById("previous-page");
+    const nextPageButton = document.getElementById("next-page");
+    var total_pages = 1;
+
+    let currentPage = 1; //initial
+
+    loadPage(1)
+
+    function renderSearch(searchname) {
+        if (searchname === 'all') {
+            loadPage(1)
+        } else {
+            fetch('get_client_by_name/' + clinician_id + "/" + searchname, {
+                method: 'GET'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    total_pages = 1
+                    const tableBody = document.querySelector("#table-test tbody");
+                    tableBody.innerHTML = ""; // Clear existing table data
+
+                    data.forEach((client) => {
+                        const tableRow = tableBody.insertRow();
+
+                        const cell1 = tableRow.insertCell(0);
+                        cell1.textContent = client.client_id;
+
+                        const cell2 = tableRow.insertCell(1);
+                        cell2.textContent = client.client_name;
+
+                        const cell3 = tableRow.insertCell(2);
+                        cell3.textContent = client.client_first_name;
+
+                        const cell4 = tableRow.insertCell(3);
+                        cell4.textContent = client.client_last_name;
+
+                        const cell5 = tableRow.insertCell(4);
+                        cell5.textContent = client.client_gender;
+
+                        // 创建"view"按钮
+                        const viewButton = document.createElement("button");
+                        viewButton.textContent = "View";
+                        viewButton.className = "btn btn-primary btn-sm";
+                        viewButton.style.marginRight = "20px";
+                        viewButton.addEventListener("click", () =>
+                            view_page(client.client_id)
+                        );
+
+                        // 创建"delete"按钮
+                        const deleteButtonElement = document.createElement("button");
+                        deleteButtonElement.textContent = "Delete";
+                        deleteButtonElement.className = "btn btn-sm btn-danger";
+                        deleteButtonElement.addEventListener("click", () =>
+                            delete_page(client.client_id)
+                        );
+
+                        const cell6 = tableRow.insertCell(5);
+                        cell6.appendChild(viewButton); // Append the button to the cell
+                        cell6.appendChild(deleteButtonElement);
+                    });
+                })
+        }
+    }
+
+
+    function last_page() {
+        if (currentPage > 1) {
+            currentPage = currentPage - 1
+            loadPage(currentPage);
+        }
+    }
+
+    function next_page() {
+        if (currentPage < total_pages) {
+            currentPage = currentPage + 1
+            loadPage(currentPage);
+        }
+    }
+
+    function view_page(clientId) {
+        var url = "/viewClient?clientId=" + clientId;
+        window.location.href = url;
+    }
+
+    function delete_page(clientId) {
+        if (confirm("Are you sure you want to delete?")) {
+            fetch(`/delete_client/${clientId}`, {
+                method: "get",
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    alert("delete successfully");
+                    window.location.href = "/homePage";
+                });
+        }
+    }
+
+    // Define a function to load the page
+    function loadPage(currentPage) {
+        fetch('clinician/' + clinician_id + '/get_all_clients?page=' + currentPage, {
+            method: "get",
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                total_pages = data.total_pages;
+                const tableBody = document.querySelector("#table-test tbody");
+                tableBody.innerHTML = ""; // Clear existing table data
+
+                data.client_list.forEach((client) => {
+                    const tableRow = tableBody.insertRow();
+
+                    const cell1 = tableRow.insertCell(0);
+                    cell1.textContent = client.client_id;
+
+                    const cell2 = tableRow.insertCell(1);
+                    cell2.textContent = client.client_name;
+
+                    const cell3 = tableRow.insertCell(2);
+                    cell3.textContent = client.client_first_name;
+
+                    const cell4 = tableRow.insertCell(3);
+                    cell4.textContent = client.client_last_name;
+
+                    const cell5 = tableRow.insertCell(4);
+                    cell5.textContent = client.client_gender;
+
+                    // 创建"view"按钮
+                    const viewButton = document.createElement("button");
+                    viewButton.textContent = "View";
+                    viewButton.className = "btn btn-primary btn-sm";
+                    viewButton.style.marginRight = "20px";
+                    viewButton.addEventListener("click", () =>
+                        view_page(client.client_id)
+                    );
+
+                    // 创建"delete"按钮
+                    const deleteButtonElement = document.createElement("button");
+                    deleteButtonElement.textContent = "Delete";
+                    deleteButtonElement.className = "btn btn-sm btn-danger";
+                    deleteButtonElement.addEventListener("click", () =>
+                        delete_page(client.client_id)
+                    );
+
+                    const cell6 = tableRow.insertCell(5);
+                    cell6.appendChild(viewButton); // Append the button to the cell
+                    cell6.appendChild(deleteButtonElement);
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+
+</script>

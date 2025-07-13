@@ -1,0 +1,295 @@
+<div class="row" id="call_data_div">
+    <div class="col-12 mb-4 mt-4 ms-1 me-3">
+        <div class="card border-light shadow-sm">
+            <div class="mt-4 mb-4 ms-4 me-4">
+
+                <div class="row m4" id="call_data_form">
+                    <div class="form-check m-2 col-2">
+                        <input type="radio" class="form-check-input" id="time-type-year" name="time_type_call"
+                               value="year"/>
+                        <label for="time-type-year" class="form-check-label">Year</label>
+                    </div>
+
+                    <div class="form-check m-2 col-2">
+                        <input type="radio" class="form-check-input" id="time-type-month" name="time_type_call"
+                               value="month"/>
+                        <label for="time-type-month" class="form-check-label">Month</label>
+                    </div>
+                    <div class="form-check m-2 col-2">
+                        <input type="radio" class="form-check-input" id="time-type-day" name="time_type_call"
+                               value="day" checked/>
+                        <label for="time-type-day" class="form-check-label">Day</label>
+                    </div>
+                </div>
+
+                <!-- datepicker form -->
+                <div class="row m-1" id="call_data_datepicker">
+                    <div class="col-4 m-1">
+                        <label for="start-date">Start Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                          clip-rule="evenodd"></path>
+                                </svg>
+                            </span>
+                            <input data-datepicker="" class="form-control" id="start-date-call" type="text"
+                                   placeholder="mm/dd/yyyy" required value="01/06/2022">
+                        </div>
+                    </div>
+                    <div class="col-4 m-1">
+                        <label for="end-date">End Date</label>
+                        <div class="input-group">
+                          <span class="input-group-text">
+                              <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20"
+                                   xmlns="http://www.w3.org/2000/svg">
+                                  <path fill-rule="evenodd"
+                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                        clip-rule="evenodd"></path>
+                              </svg>
+                              </span>
+                            <input data-datepicker="" class="form-control" id="end-date-call" type="text"
+                                   placeholder="mm/dd/yyyy" required value="01/017/2022">
+                        </div>
+                    </div>
+                    <div class="col-2 m-1" id="call_data_button">
+                        <button type="button" class="btn btn-md btn-primary m-4" onclick="submit_search_call()">Search
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 mb-4" id="call_duration_time_card">
+    <div class="card border-light shadow-sm">
+        <div class="mt-4 mb-4 ms-4 me-4">
+            {% include 'views/dataAnalysis/call_duration_time.html' %}
+        </div>
+    </div>
+</div>
+
+<div class="col-12 mb-4" id="call_counts_time_card">
+    <div class="card border-light shadow-sm">
+        <div class="mt-4 mb-4 ms-4 me-4">
+            {% include 'views/dataAnalysis/call_counts_time.html' %}
+        </div>
+    </div>
+</div>
+
+<div class="col-12 mb-4" id="call_duration_trace_card">
+    <div class="card border-light shadow-sm">
+        <div class="mt-4 mb-4 ms-4 me-4">
+            {% include 'views/dataAnalysis/call_duration_trace.html' %}
+        </div>
+    </div>
+</div>
+
+<div class="col-12 mb-4" id="call_counts_trace_card">
+    <div class="card border-light shadow-sm">
+        <div class="mt-4 mb-4 ms-4 me-4">
+            {% include 'views/dataAnalysis/call_counts_trace.html' %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function secondsToTime(seconds) {
+        var hours = Math.floor(seconds / 60 / 60);
+        var minutes = Math.floor((seconds - hours * 60 * 60) / 60);
+        var seconds = (seconds - hours * 60 * 60 - minutes * 60);
+        var res = "";
+        res += ("00" + hours).slice(-2) + ":";
+        res += ("00" + minutes).slice(-2) + ":";
+        res += ("00" + hours).slice(-2);
+        return res;
+    }
+
+    function formatDateRange(recordEntry) {
+        var start = new Date(recordEntry['min_time']);
+        var end = new Date(recordEntry['max_time']);
+        var res = "";
+        if (start.getTime() === end.getTime()) {
+            res += (start.getMonth() + 1) + "/" + start.getDate()  + "/" + start.getFullYear();
+        } else {
+            res += (start.getMonth() + 1) + "/" + start.getDate() + "/" + start.getFullYear();
+            res += " - ";
+            res += (end.getMonth() + 1) + "/" + end.getDate() + "/" + end.getFullYear();
+        }
+        return res;
+    }
+</script>
+
+
+<script>
+    var urlParams = new URLSearchParams(window.location.search);
+    var clientId = urlParams.get("clientId");
+    var client_device_id
+    {#fetch('get_client_by_id/' + clientId, {#}
+    {#        method: 'GET'#}
+    {#    })#}
+    {#        .then(response => response.json())#}
+    {#        .then(data => {#}
+    {#            client_device_id = data[0].client_device_id;#}
+    {#        }).catch(err => {#}
+    {#        console.log(err)#}
+    {#    })#}
+
+    function submit_search_call() {
+        fetchData_call()
+    }
+
+    function convertDateFormat(date) {
+        var d = new Date(date);
+        return convertDate(d);
+    }
+
+    function convertDate(date) {
+        return new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
+    }
+
+    function getType_call() {
+        // get time_type
+        var time_type = document.querySelector('input[name="time_type_call"]:checked').value;
+        console.log("Selected time_type: " + time_type)
+        var type = 0
+        if (time_type === "month") {
+            type = 1;
+        } else if (time_type === "year") {
+            type = 2;
+        }
+        return type;
+    }
+
+    function setVisibility_call(element_id, visibility) {
+        document.querySelector("#" + element_id).style.visibility = visibility;
+    }
+
+    function hideAllDiagrams_call() {
+        setVisibility_call("call_duration_time_card", 'collapse');
+        setVisibility_call("call_counts_trace_card", 'collapse');
+        setVisibility_call("call_counts_time_card", 'collapse');
+        setVisibility_call("call_duration_trace_card", 'collapse');
+    }
+
+
+    function init_call() {
+        hideAllDiagrams_call();
+    }
+
+    init_call();
+
+    // fetchData();
+    async function fetchData_call() {
+        var type = getType_call();
+
+        //var device_id = window.sessionStorage['device_id'];
+
+        var start_date_selector = document.getElementById("start-date-call");
+        var end_date_selector = document.getElementById("end-date-call");
+
+        //var start_timeID = document.getElementById("start-date")
+        var start_time = convertDateFormat(start_date_selector.value);
+
+        //var end_timeID = document.getElementById("end-date")
+        var end_time = convertDateFormat(end_date_selector.value);
+
+        if (start_time > end_time) {
+        var temp = start_time;
+        start_time = end_time;
+        end_time = temp;
+
+        start_date_selector.value = start_time;
+        end_date_selector.value = end_time;
+    }
+
+
+        // fetch call-duration-time data
+        var fetch_call_duration_time = fetch('call_duration_time/'+clientId+'?' + new URLSearchParams({
+            'start_time': start_time,
+            'end_time': end_time,
+            'time_type': type
+        }))
+            .then(response => response.text())
+            .then(text => JSON.parse(text))
+
+
+        // fetch call-counts-trace data
+        var fetch_call_counts_trace = fetch('call_counts_trace/'+clientId+'?' + new URLSearchParams({
+            'start_time': start_time,
+            'end_time': end_time,
+            'time_type': type
+        }))
+            .then(response => response.text())
+            .then(text => JSON.parse(text))
+
+        // fetch call-counts-time
+        var fetch_call_counts_time = fetch('call_counts_time/'+clientId+'?' + new URLSearchParams({
+            'start_time': start_time,
+            'end_time': end_time,
+            'time_type': type
+        }))
+            .then(response => response.text())
+            .then(text => JSON.parse(text))
+
+        // fetch call-duration-trace
+        var fetch_call_duration_trace = fetch('call_duration_trace/'+clientId+'?' + new URLSearchParams({
+            'start_time': start_time,
+            'end_time': end_time,
+            'time_type': type
+        }))
+            .then(response => response.text())
+            .then(text => JSON.parse(text))
+
+
+        let [data_call_duration_time,
+            data_call_counts_trace,
+            data_call_counts_time,
+            data_call_duration_trace] = await Promise.all([
+            fetch_call_duration_time,
+            fetch_call_counts_trace,
+            fetch_call_counts_time,
+            fetch_call_duration_trace])
+
+        var hasData = false;
+
+
+
+        if (data_call_duration_time && data_call_duration_time.record && data_call_duration_time.record.length !== 0) {
+            setVisibility_call("call_duration_time_card", 'visible');
+            renderCallDurationTime(data_call_duration_time);
+            hasData = true;
+        } else {
+            setVisibility_call("call_duration_time_card", 'collapse');
+        }
+        if (data_call_counts_trace && data_call_counts_trace.record && data_call_counts_trace.record.length !== 0) {
+            setVisibility_call("call_counts_trace_card", 'visible');
+            renderCallCountsTrace(data_call_counts_trace);
+        } else {
+            setVisibility_call("call_counts_trace_card", 'collapse');
+        }
+        if (data_call_counts_time && data_call_counts_time.record && data_call_counts_time.record.length !== 0) {
+            setVisibility_call("call_counts_time_card", 'visible');
+            renderCallCountsTime(data_call_counts_time);
+            hasData = true;
+        } else {
+            setVisibility_call("call_counts_time_card", 'collapse');
+        }
+        if (data_call_duration_trace && data_call_duration_trace.record && data_call_duration_trace.record.length !== 0) {
+            setVisibility_call("call_duration_trace_card", 'visible');
+            renderCallDurationTrace(data_call_duration_trace);
+            hasData = true;
+        } else {
+            setVisibility_call("call_duration_trace_card", 'collapse');
+        }
+        if (!hasData) {
+            alert("no available data");
+        }
+
+    }
+</script>
+

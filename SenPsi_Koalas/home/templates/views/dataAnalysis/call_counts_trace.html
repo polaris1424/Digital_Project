@@ -1,0 +1,117 @@
+<div class="text-center">
+    <h6>Call Counts with respect to Trace</h6>
+</div>
+
+<div id="chart_call_counts_trace"></div>
+
+<script>
+    function renderCallCountsTrace(data) {
+        // prepare rendering data
+        var options = {
+            series: [{
+                name: 'incoming',
+                data: []  // need to fill in
+            }, {
+                name: 'outgoing',
+                data: []  // need to fill in
+            }, {
+                name: 'missed',
+                data: [] // need to fill in
+            }],
+            chart: {
+                type: 'bar',
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: [], // need to fill in
+                title: {
+                    text: 'Trace'
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Counts'
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: (val) => val
+                }
+            }
+        };
+
+        // get all relevent dates
+        var allDates = new Set();
+        data.record.forEach((el) => allDates.add(el['trace']));
+
+        // prepare a dictionary for two types of calls
+        var dataDict = new Map();
+        allDates.forEach((trace) => {
+            dataDict.set(trace, {});
+        });
+
+        // add records to dictionary according to call type
+        data.record.forEach((el) => {
+            dataDict.get(el['trace'])[el['call_type']] = el;
+        });
+
+        // iterate through the dictionary
+        // 1 – incoming, 2 – outgoing, 3 – missed
+        allDates.forEach((trace) => {
+            // incoming
+            if (dataDict.get(trace)[1] === undefined) {
+                options.series[0].data.push(0);
+            } else {
+                options.series[0].data.push(dataDict.get(trace)[1]['counts']);
+            }
+            // outgoing
+            if (dataDict.get(trace)[2] === undefined) {
+                options.series[1].data.push(0);
+            } else {
+                options.series[1].data.push(dataDict.get(trace)[2]['counts']);
+            }
+            // missed
+            if (dataDict.get(trace)[3] === undefined) {
+                options.series[2].data.push(0);
+            } else {
+                options.series[2].data.push(dataDict.get(trace)[3]['counts']);
+            }
+
+
+            var entry_keys = Object.keys(dataDict.get(trace));
+            if (entry_keys.length > 0) {
+                var entry = dataDict.get(trace)[entry_keys[0]]["trace"].slice(0,5);
+                options.xaxis.categories.push(entry);
+            } else {
+                options.xaxis.categories.push("Unknown date range");
+            }
+        });
+
+        var parentNode = document.querySelector("#chart_call_counts_trace");
+        parentNode.childNodes.forEach(node =>{
+            parentNode.removeChild(node);
+        })
+
+        // render chart
+        var chart = new ApexCharts(document.querySelector("#chart_call_counts_trace"), options);
+        chart.render();
+    }
+</script>

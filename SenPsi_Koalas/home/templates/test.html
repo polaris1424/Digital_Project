@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+</head>
+<body>
+<h1>{{ error_message }}</h1>
+
+<h1>Add Client</h1>
+    <form id="addClientForm" method="POST" action="update_client/8">
+        {#   写add client 表单的时候一定要添加这个csrf_token    #}
+        {% csrf_token %}
+        <!-- 添加客户的字段 -->
+        <label for="client_name">Client Name:</label>
+        <input type="text" name="client_name" required><br>
+
+        <label for="client_gender">Client Gender:</label>
+        <input type="text" name="client_gender" required><br>
+
+        <!-- 其他字段我就不写了，只是个例子 -->
+        <!-- ... -->
+
+        <input type="submit" value="Add Client">
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('addClientForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('update_client/8', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('response').innerHTML = 'Error occurred';
+            });
+        });
+    </script>
+</body>
+</html>

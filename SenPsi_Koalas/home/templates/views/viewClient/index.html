@@ -1,0 +1,170 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="col-12 mb-4 mt-4 ms-4" style="width:100%; display: flex;flex-direction: row; align-items: center;">
+        <a href="{% url 'homePage' %}" class="btn btn-outline-primary">Back</a>
+        <div class="ms-4">
+            <h2>View Client</h2>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <!-- 左侧区域容器 -->
+            <div class="col-6 border p-4" style="background-color: white;">
+                <!-- 输入字段表单 -->
+                <form method="post" id="updateClientForm">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="client_name" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="client_name" name="client_name" disabled/>
+                    </div>
+                    <div class="mb-3">
+                        <label style="color: red">*</label>
+                        <label for="client_gender" class="form-label">Gender</label>
+                        <select class="form-select" id="client_gender" name="client_gender" required>
+                            <option value="">-- Select Gender --</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <div id="gender_error" style="color: red"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="client_first_name" name="client_first_name"
+                               required/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="client_last_name" name="client_last_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label style="color: red">*</label>
+                        <label for="birthday" class="form-label">Birthday</label>
+                        <input type="date" class="form-control" id="client_birthday" name="client_birthday" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="client_title" class="form-label">Title</label>
+                        <select class="form-select" id="client_title" name="client_title">
+                            <option value="">-- Select Title --</option>
+                            <option value="Mr.">Mr.</option>
+                            <option value="Mrs.">Mrs.</option>
+                            <option value="Ms.">Ms.</option>
+                            <option value="Miss">Miss</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="x_id" class="form-label">Twitter ID</label>
+                        <input type="text" class="form-control" id="client_twitter_id" name="client_twitter_id">
+                    </div>
+                    <div class="mb-3">
+                        <label for="facebook_id" class="form-label">Facebook ID</label>
+                        <input type="text" class="form-control" id="client_facebook_id" name="client_facebook_id">
+                    </div>
+                    <div class="mb-3">
+                        <label for="aware_id" class="form-label">AWARE ID</label>
+                        <input type="text" class="form-control" id="client_device_id" name="client_device_id">
+                    </div>
+                    <div class="d-flex justify-content-center">
+{#                        <div class="mb-3 me-6">#}
+{#                            <a href="{% url 'homePage' %}" class="btn btn-outline-primary">Back</a>#}
+{#                        </div>#}
+                        <div class="mb-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- 右侧区域容器 -->
+            <div class="col-6 border p-4" style="background-color: white;">
+                <div class="mb-4">
+                    <!-- AWARE Sensor -->
+                    <h4>AWARE Sensor</h4>
+                </div>
+                <!-- dataAnalysis按钮 -->
+                <div class="col-3 mt-2 ms-2 d-flex justify-content-center">
+                    <img src="../../../../static/communication.jpg" alt="Communication Image"
+                         onclick="communcation_page()">
+                </div>
+                <div>
+                    <p>communication sensor</p>
+                </div>
+            </div>
+        </div>
+    </div> <!-- 左侧容器结束 -->
+    <script>
+        var urlParams = new URLSearchParams(window.location.search);
+        var clientId = urlParams.get("clientId");
+
+        function communcation_page() {
+            var url = "/dataAnalysis?clientId=" + clientId;
+            window.location.href = url;
+        }
+
+        fetch('get_client_by_id/' + clientId, {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                var client_name = document.getElementById('client_name');
+                client_name.value = data[0].client_name;
+                var client_gender = document.getElementById('client_gender');
+                client_gender.value = data[0].client_gender;
+                var client_first_name = document.getElementById('client_first_name');
+                client_first_name.value = data[0].client_first_name;
+                var client_last_name = document.getElementById('client_last_name');
+                client_last_name.value = data[0].client_last_name;
+                var client_birthday = document.getElementById('client_birthday');
+                client_birthday.value = data[0].client_birthday;
+                var client_title = document.getElementById('client_title');
+                client_title.value = data[0].client_title;
+                var client_twitter_id = document.getElementById('client_twitter_id');
+                client_twitter_id.value = data[0].client_twitter_id;
+                var client_facebook_id = document.getElementById('client_facebook_id');
+                client_facebook_id.value = data[0].client_facebook_id;
+                var client_device_id = document.getElementById('client_device_id');
+                client_device_id.value = data[0].client_device_id;
+
+            }).catch(err => {
+            console.log(err)
+        })
+
+        document.getElementById('updateClientForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            const gender = document.getElementById("client_gender").value;
+            const gender_error = document.getElementById("gender_error");
+            let flag = 0;
+            if (gender === "") {
+                flag = 1;
+                gender_error.textContent = "must be have gender.";
+            } else {
+                gender_error.style.display = "none";
+            }
+            if (flag === 0) {
+
+                fetch('update_client/' + clientId, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}', // 添加 CSRF Token 头
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if ('message' in data) {
+                            alert('Client updated successfully');
+                        } else if ('error' in data) {
+                            alert('Error: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Error occurred:', error);
+                    });
+            }
+        })
+    </script>
+{% endblock content %}
